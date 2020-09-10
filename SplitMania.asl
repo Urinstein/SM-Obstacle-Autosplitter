@@ -2,19 +2,20 @@
 // v0.3 by Urinstein
 
 /*	current issues:
-	- only works in Single Map Local Play	<- appears to be ridiculously complicated to solve, not worth it
-	- resetting on last CP causes a "goal" split	<- no idea how to solve thios, but would be really good to do
-	- going on the wrong map in a multi map run might ruin splits	<- no intention of fixing this
+	- only tested with standalone MP 64-bit
+	- only works in Single Map Local Play		<- appears to be ridiculously complicated to solve, not worth it
+	- resetting on last CP causes a "goal" split		<- no idea how to solve this atm, but would be really good to do
+	- going on the wrong map in a multi map run might ruin splits		<- no intention of fixing this
 */
 
 state("ManiaPlanet") {
-	int cpLocalMap :	"ManiaPlanet.exe", 0x01C8BE20, 0x138, 0x58, 0x38, 0x10, 0x258;					// current CP in Single Map local games
+	int cpLocalMap :	"ManiaPlanet.exe", 0x01C8BE20, 0x138, 0x58, 0x38, 0x10, 0x258;				// current CP in Single Map local games
 	//int cpLocalNet :	"ManiaPlanet.exe", 0x01CD3938, 0x930, 0x38, 0x0, 0x770, 0x20, 0x10, 0x6B0;		// current CP in local networks
-	int maxCP :			"ManiaPlanet.exe", 0x01C8BE20, 0x138, 0x58, 0x18, 0x10, 0xDF8;					// No. of Cps on current map
-	//int serverTime :	"ManiaPlanet.exe", 0x01CA08A8, 0x8C;											// this one comes with ms but they seem to be inaccurate
+	int maxCP :		"ManiaPlanet.exe", 0x01C8BE20, 0x138, 0x58, 0x18, 0x10, 0xDF8;				// No. of CPs on current map
+	//int serverTime :	"ManiaPlanet.exe", 0x01CA08A8, 0x8C;							// this one comes with ms but they seem to be inaccurate
 	int serverTime :	"ManiaPlanet.exe", 0x1D04724;
-	bool onMap :		"ManiaPlanet.exe", 0x1BDDEAB;													// whether or not a map is currently loaded (detects menus and loading screens, so to say)
-	bool running :		"ManiaPlanet.exe", 0x1C7179B;													// whether the player is currently running (as opposed to waiting to be spawned for a run)
+	bool onMap :		"ManiaPlanet.exe", 0x1BDDEAB;				// whether or not a map is currently loaded (detects menus and loading screens, so to say)
+	bool running :		"ManiaPlanet.exe", 0x1C7179B;				// whether the player is currently running (as opposed to waiting to be spawned for a run)
 }
 
 state("ManiaPlanet32") {
@@ -107,7 +108,9 @@ split{
 }
 
 reset {
-	if (vars.startedNewMap && !current.running && old.running && old.cpLocalMap != old.maxCP) {return true;}
+	if (vars.startedNewMap && !current.running && old.running && old.cpLocalMap != old.maxCP) {
+		return true;
+	}
 }
 
 isLoading
@@ -117,6 +120,8 @@ isLoading
 
 gameTime
 {
-	if (vars.startedNewMap)	{vars.runTime = current.serverTime - vars.startTime;}
+	if (vars.startedNewMap)	{
+		vars.runTime = current.serverTime - vars.startTime;
+	}
 	return TimeSpan.FromMilliseconds(vars.runTime);
 }
