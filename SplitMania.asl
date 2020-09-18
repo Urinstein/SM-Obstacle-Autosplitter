@@ -1,5 +1,5 @@
 // Shootmania Obstacle Autosplitter
-// v0.3 by Urinstein
+// v0.4 by Urinstein
 
 /*	current issues:
 	- only tested with standalone MP 64-bit
