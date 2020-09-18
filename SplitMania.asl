@@ -14,7 +14,7 @@ state("ManiaPlanet") {
 	int maxCP :		"ManiaPlanet.exe", 0x01C8BE20, 0x138, 0x58, 0x18, 0x10, 0xDF8;				// No. of CPs on current map
 	//int serverTime :	"ManiaPlanet.exe", 0x01CA08A8, 0x8C;							// this one comes with ms but they seem to be inaccurate
 	int serverTime :	"ManiaPlanet.exe", 0x1D04724;
-	bool onMap :		"ManiaPlanet.exe", 0x1BDDEAB;				// whether or not a map is currently loaded (detects menus and loading screens, so to say)
+	bool onMap :		"ManiaPlanet.exe", 0x1C99780;				// whether or not a map is currently loaded (detects menus and loading screens, so to say)
 	bool running :		"ManiaPlanet.exe", 0x1C7179B;				// whether the player is currently running (as opposed to waiting to be spawned for a run)
 }
 
@@ -60,13 +60,14 @@ update {
 		//	new map loaded	//
 	if (current.onMap && !old.onMap) {
 		vars.finishedMap = false;
+		print("update1");
 	}
 	
 		//	run on new map started	//
 	if (!vars.finishedMap && current.running && !old.running) {
 		vars.startedNewMap = true;
 		vars.startTime = current.serverTime + 503 - vars.runTime;
-		//print("update2");
+		print("update2");
 	}
 	
 	
@@ -80,6 +81,7 @@ start {
 		vars.mapCtr = 1;
 		vars.finishedMap = false;
 		vars.startedNewMap = true;
+		print("start");
 		return(true);
 	}
 }
@@ -91,24 +93,26 @@ split{
 			vars.finishedMap = true;
 			vars.startedNewMap = false;
 			vars.mapCtr++;
-			//print("split goal");
+			print("split goal");
 			return true;
 		}
 			//	Split every CP	//
 		if (settings["everyCP"] && current.cpLocalMap - old.cpLocalMap == 1) {
-			//print("split every CP");
+			print("split every CP");
+			print("hello, you just reached CP " + current.cpLocalMap.ToString() + "!");
 			return true;
 		}
 			// Split specific CPs	//
 		string specificSetting = "CP" + vars.mapCtr + "." + current.cpLocalMap;
 		if (current.running == true && current.cpLocalMap != 0 && settings[specificSetting] && current.cpLocalMap - old.cpLocalMap == 1) {
+			print("split specific CP");
 			return true;
 		}
 	}
 }
 
 reset {
-	if (vars.startedNewMap && !current.running && old.running && old.cpLocalMap != old.maxCP) {
+	if (vars.startedNewMap && !current.running && old.running && old.cpLocalMap != old.maxCP && current.cpLocalMap == 0) {
 		return true;
 	}
 }
