@@ -23,7 +23,7 @@ state("ManiaPlanet32") {
 }
 
 startup {
-	refreshRate = 100;
+	refreshRate = 200;
 	
 	settings.Add("everyCP", true, "Split on every CP");
 	settings.Add("CPgoal", true, "Split on Goal");
